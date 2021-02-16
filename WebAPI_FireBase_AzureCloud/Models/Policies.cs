@@ -12,7 +12,7 @@ namespace WebAPI_FireBase_AzureCloud.Models
         public const string User = "User";
 
         public static AuthorizationPolicy AdminPolicy()
-        {
+        { 
             return new AuthorizationPolicyBuilder().RequireAuthenticatedUser().RequireRole(Admin).Build();
         }
 
