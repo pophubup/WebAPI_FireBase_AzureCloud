@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,9 @@ namespace WebAPI_FireBase_AzureCloud
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ICloudClient<FirestoreDb, Product>, ProductRepository_FireBase>();
+            services.AddSingleton<ICloudClient<CloudBlobContainer, Product>, FileRepository_Azure>();
             services.AddControllers();
+            services.AddMemoryCache();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
@@ -118,7 +121,7 @@ namespace WebAPI_FireBase_AzureCloud
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseRouting();
             app.UseSwagger();
             app.UseSwaggerUI(c =>

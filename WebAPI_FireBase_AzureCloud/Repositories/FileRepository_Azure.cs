@@ -1,13 +1,13 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Firestore;
-using Google.Cloud.Firestore.V1;
-using Grpc.Auth;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI_FireBase_AzureCloud.Models;
@@ -15,32 +15,28 @@ using WebAPI_FireBase_AzureCloud.Repositories.IRepository;
 
 namespace WebAPI_FireBase_AzureCloud.Repositories
 {
-    public class ProductRepository_FireBase : ICloudClient<FirestoreDb, Product>
+    public class FileRepository_Azure : ICloudClient<CloudBlobContainer, Product>
     {
         private IConfiguration _config;
         private IMemoryCache _cache;
 
-        public ProductRepository_FireBase(IConfiguration config, IMemoryCache cache)
+        public FileRepository_Azure(IConfiguration config, IMemoryCache cache)
         {
             _config = config;
             _cache = cache;
         }
-        public FirestoreDb InitalCleinttCredential 
-       {
+        public CloudBlobContainer InitalCleinttCredential
+        {
             get
             {
-
-                FirebBase data = _config.GetSection("Firebase").Get<FirebBase>();
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-                GoogleCredential cred = GoogleCredential.FromJson(json);
-                Grpc.Core.Channel channel = new Grpc.Core.Channel(FirestoreClient.DefaultEndpoint.Host,
-                             FirestoreClient.DefaultEndpoint.Port,
-                               cred.ToChannelCredentials());
-                FirestoreClient client = FirestoreClient.Create(channel);
-                FirestoreDb db = FirestoreDb.Create("getproducts-92bee", client);
-                return db;
+                AzureBlobContainer info = _config.GetSection("BlobStorageAccount").Get<AzureBlobContainer>();
+                StorageCredentials storageCredentials = new StorageCredentials(info.AccountName, info.AccountKey);
+                CloudStorageAccount account = new CloudStorageAccount(storageCredentials, true);
+                CloudBlobClient serviceClient = account.CreateCloudBlobClient();
+                CloudBlobContainer container = serviceClient.GetContainerReference("products");
+                return container;
+                
             }
-             
         }
 
         public StateContainer BulkDelete(IEnumerable<Product> obj)
@@ -65,30 +61,30 @@ namespace WebAPI_FireBase_AzureCloud.Repositories
 
         public List<Product> GetData()
         {
-            string cacheEntry = string.Empty;
-            var data = _cache.Get<List<Product>>("bundleProduct");
-            if (data == null)
+            BlobContinuationToken continuationToken = null;
+            var data = _cache.Get<List<Product>>("bundleFiles");
+            if(data == null)
             {
+                BlobResultSegment resultSegment = InitalCleinttCredential.ListBlobsSegmentedAsync(string.Empty, true, BlobListingDetails.Metadata, null, continuationToken, null, null).GetAwaiter().GetResult();
                 List<Product> products = new List<Product>();
-                Query allCitiesQuery = InitalCleinttCredential.Collection("Products");
-                QuerySnapshot allCitiesQuerySnapshot = allCitiesQuery.GetSnapshotAsync().GetAwaiter().GetResult();
-                foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
-                {
-                    Product product = documentSnapshot.ConvertTo<Product>();
-                    products.Add(product);
-                }
+                resultSegment.Results.ToList().ForEach(x => {
+                    CloudBlob blob = (CloudBlob)x;
+                    products.Add(new Product()
+                    {
+                        ProductName = blob.Name.Split('.')[0],
+                        ProductImagePath = blob.Uri.ToString()
+
+                    });
+                });
                 var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromDays(1));
-                _cache.Set("bundleProduct", products, cacheEntryOptions);
+                _cache.Set("bundleFiles", products, cacheEntryOptions);
                 return products;
             }
             else
             {
-                
                 return data;
             }
-
-           
-            
+          
         }
 
         public List<Product> GetData(string ID)
@@ -98,7 +94,8 @@ namespace WebAPI_FireBase_AzureCloud.Repositories
 
         public Product GetSingleData(string ID)
         {
-            throw new NotImplementedException();
+        
+            return GetData().FirstOrDefault(x => x.ProductName == ID);
         }
 
         public StateContainer InsertData(Product obj)

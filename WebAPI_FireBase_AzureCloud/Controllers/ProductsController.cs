@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,16 +19,24 @@ namespace WebAPI_FireBase_AzureCloud.Controllers
     {
         private readonly ILogger<ProductsController> _logger;
         private ICloudClient<FirestoreDb, Product> _products;
-        public ProductsController(ILogger<ProductsController> logger, ICloudClient<FirestoreDb, Product> products)
+        private ICloudClient<CloudBlobContainer, Product> _file;
+        public ProductsController(ILogger<ProductsController> logger, ICloudClient<FirestoreDb, Product> products, ICloudClient<CloudBlobContainer, Product> file)
         {
             _logger = logger;
             _products = products;
+            _file = file;
         }
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
         public IEnumerable<Product> GetProducts()
         {
-            return _products.GetData();
+
+            var products = _products.GetData(); 
+            products.ForEach(x =>
+            {
+                x.ProductImagePath = _file.GetSingleData(x.ProductName).ProductImagePath;
+            });
+            return products;
         }
     }
 }
