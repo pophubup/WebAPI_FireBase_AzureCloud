@@ -23,7 +23,7 @@ namespace WebAPI_FireBase_AzureCloud.Controllers
 
         private List<User> appUsers = new List<User>
         {
-            new User {  FullName = "Vaibhav Bhapkar",  UserName = "admin", Password = "1234", UserRole = "Admin" },
+            new User {  FullName = "AllenHuang",  UserName = "admin", Password = "1234", UserRole = "Admin" },
             new User {  FullName = "Test User",  UserName = "user", Password = "1234", UserRole = "User" }
         };
         public LoginController(IConfiguration config)
