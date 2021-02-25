@@ -35,7 +35,7 @@ namespace WebAPI_FireBase_AzureCloud.Controllers
         }
         /// <summary>
         /// need Authorization to get All Products
-        /// </summary>
+        /// </summary> 
         /// <param header="Bear ...."></param>  
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
