@@ -39,7 +39,7 @@ namespace WebAPI_FireBase_AzureCloud.Controllers
         /// <param header="Bear ...."></param>  
         [HttpGet]
         [Authorize(Policy = Policies.Admin)]
-        [SwaggerResponse(statusCode: 200, Type = typeof(IEnumerable<Product>))]
+        [SwaggerResponse(statusCode: 200, Type = typeof(IEnumerable<Product>), Description = "123")]
         [SwaggerResponse(statusCode: 401, Type = typeof(string))]
         public IEnumerable<Product> GetProducts()
         {

@@ -111,7 +111,9 @@ namespace WebAPI_FireBase_AzureCloud
                     Array.Empty<string>()
                 }
                 });
-                var xmlFile = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+         
+                var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                var xmlFile = Path.Combine(baseDirectory, "WebAPI_FireBase_AzureCloud.xml");
                 c.IncludeXmlComments(xmlFile);
             });
            
