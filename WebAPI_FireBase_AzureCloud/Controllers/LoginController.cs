@@ -15,6 +15,9 @@ using WebAPI_FireBase_AzureCloud.Models;
 
 namespace WebAPI_FireBase_AzureCloud.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class LoginController : ControllerBase
@@ -26,10 +29,19 @@ namespace WebAPI_FireBase_AzureCloud.Controllers
             new User {  FullName = "AllenHuang",  UserName = "admin", Password = "1234", UserRole = "Admin" },
             new User {  FullName = "Test User",  UserName = "user", Password = "1234", UserRole = "User" }
         };
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="config"></param>
         public LoginController(IConfiguration config)
         {
             _config = config;
         }
+        /// <summary>
+        /// login with availiable user
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         public IActionResult Login([FromBody] User login)
@@ -47,6 +59,11 @@ namespace WebAPI_FireBase_AzureCloud.Controllers
             }
             return response;
         }
+        /// <summary>
+        /// after one day token will expired and need refresh again
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         public IActionResult RefreshToken([FromForm] string token)
@@ -82,7 +99,7 @@ namespace WebAPI_FireBase_AzureCloud.Controllers
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.Date.AddSeconds(10),
+                expires: DateTime.Now.Date.AddDays(1),
                 signingCredentials: credentials
             );
             return new JwtSecurityTokenHandler().WriteToken(token);

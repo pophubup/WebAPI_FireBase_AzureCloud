@@ -71,11 +71,12 @@ namespace WebAPI_FireBase_AzureCloud.Repositories
                     CloudBlob blob = (CloudBlob)x;
                     products.Add(new Product()
                     {
-                        ProductName = blob.Name.Split('.')[0],
-                        ProductImagePath = blob.Uri.ToString()
+                        productName = blob.Name.Split('.')[0],
+                        productImg = blob.Uri.ToString()
 
                     });
                 });
+               
                 var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromDays(1));
                 _cache.Set("bundleFiles", products, cacheEntryOptions);
                 return products;
@@ -95,7 +96,7 @@ namespace WebAPI_FireBase_AzureCloud.Repositories
         public Product GetSingleData(string ID)
         {
         
-            return GetData().FirstOrDefault(x => x.ProductName == ID);
+            return GetData().FirstOrDefault(x => x.productName == ID);
         }
 
         public StateContainer InsertData(Product obj)

@@ -4,6 +4,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\Yohoo\Desktop\WebAPI_FireBase_AzureCloud\WebAPI_FireBase_AzureCloud\WebAPI_FireBase_AzureCloud.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" Version="1.42.0" />
     <PackageReference Include="Google.Cloud.Firestore" Version="1.1.0" />
@@ -12,6 +17,7 @@
     <PackageReference Include="Grpc.Core" Version="1.22.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.11" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.0.7" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 

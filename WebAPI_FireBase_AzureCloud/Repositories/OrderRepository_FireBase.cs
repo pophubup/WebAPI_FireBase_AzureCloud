@@ -4,7 +4,6 @@ using Google.Cloud.Firestore.V1;
 using Grpc.Auth;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,19 +12,19 @@ using WebAPI_FireBase_AzureCloud.Repositories.IRepository;
 
 namespace WebAPI_FireBase_AzureCloud.Repositories
 {
-    public class ProductRepository_FireBase : ICloudClient<FirestoreDb, Product>
+    public class OrderRepository_FireBase : ICloudClient<FirestoreDb, Order>
     {
         private IConfiguration _config;
         private IMemoryCache _cache;
-        private ICloudClient<CloudBlobContainer, Product> _file;
-        public ProductRepository_FireBase(IConfiguration config, IMemoryCache cache, ICloudClient<CloudBlobContainer, Product> file)
+
+        public OrderRepository_FireBase(IConfiguration config, IMemoryCache cache)
         {
             _config = config;
             _cache = cache;
-            _file = file;
         }
-        public FirestoreDb InitalCleinttCredential 
-       {
+
+        public FirestoreDb InitalCleinttCredential
+        {
             get
             {
 
@@ -39,33 +38,35 @@ namespace WebAPI_FireBase_AzureCloud.Repositories
                 FirestoreDb db = FirestoreDb.Create("getproducts-92bee", client);
                 return db;
             }
-             
-        }
 
-        public StateContainer BulkDelete(IEnumerable<Product> obj)
+        }
+        public StateContainer BulkDelete(IEnumerable<Order> obj)
         {
             throw new NotImplementedException();
         }
 
-        public StateContainer BulkInsert(IEnumerable<Product> obj)
+        public StateContainer BulkInsert(IEnumerable<Order> obj)
         {
-            string msg = string.Empty;
             WriteBatch batch = InitalCleinttCredential.StartBatch();
-            DocumentReference nycRef = InitalCleinttCredential.Collection("orders").Document(DateTime.Now.ToString("yyyyMMddHHmmss"));
+            DocumentReference nycRef = InitalCleinttCredential.Collection("Orders").Document(DateTime.Now.ToString("yyyyMMddHHmmss"));
+            string msg = string.Empty;
             obj.ToList().ForEach(x =>
             {
                 batch.Set(nycRef, x);
-                msg += $"{x.productId},";
+                msg += $"ProductId : {x.productId},";
             });
-            var result = batch.CommitAsync().GetAwaiter().GetResult();
+
+            
+            // Commit the batch
+             batch.CommitAsync().GetAwaiter().GetResult();
             return new StateContainer()
             {
                 isActionSuccess = true,
-                Message = msg + " Bulk Insert Success"
+                Message = $"{msg} Insert Success"
             };
         }
 
-        public StateContainer BulkUpdate(IEnumerable<Product> obj)
+        public StateContainer BulkUpdate(IEnumerable<Order> obj)
         {
             throw new NotImplementedException();
         }
@@ -75,60 +76,51 @@ namespace WebAPI_FireBase_AzureCloud.Repositories
             throw new NotImplementedException();
         }
 
-        public List<Product> GetData()
+        public List<Order> GetData()
         {
-        
-            var data = _cache.Get<List<Product>>("bundleProduct");
+            var data = _cache.Get<List<Order>>("bundleOrder");
             if (data == null)
             {
-                List<Product> products = new List<Product>();
-                Query allCitiesQuery = InitalCleinttCredential.Collection("products");
+                List<Order> Orders = new List<Order>();
+                Query allCitiesQuery = InitalCleinttCredential.Collection("Orders");
                 QuerySnapshot allCitiesQuerySnapshot = allCitiesQuery.GetSnapshotAsync().GetAwaiter().GetResult();
                 foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
                 {
-                    Product product = documentSnapshot.ConvertTo<Product>();
-                    products.Add(product);
+                    Order order = documentSnapshot.ConvertTo<Order>();
+                    Orders.Add(order);
                 }
-                products.ForEach(x =>
-                {
-                    x.productImg = _file.GetSingleData(x.productName).productImg;
-                });
                 var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromDays(1));
-                _cache.Set("bundleProduct", products, cacheEntryOptions);
-               
-                return products;
+                _cache.Set("bundleOrder", Orders, cacheEntryOptions);
+                return Orders;
             }
             else
             {
-                
+
                 return data;
             }
 
-           
+        }
+
+        public List<Order> GetData(string ID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Order GetSingleData(string ID)
+        {
+            Query allCitiesQuery = InitalCleinttCredential.Collection("Orders");
+            Query query = allCitiesQuery.WhereEqualTo("orderId", ID);
+            QuerySnapshot querySnapshot =  query.GetSnapshotAsync().GetAwaiter().GetResult();
             
+            return querySnapshot.Documents[0].ConvertTo<Order>();
         }
 
-        public List<Product> GetData(string ID)
+        public StateContainer InsertData(Order obj)
         {
             throw new NotImplementedException();
         }
 
-        public Product GetSingleData(string ID)
-        {
-            CollectionReference citiesRef = InitalCleinttCredential.Collection("products");
-            Query query = citiesRef.WhereEqualTo("productId", ID);
-            QuerySnapshot querySnapshot = query.GetSnapshotAsync().GetAwaiter().GetResult();
-            var result = querySnapshot.Documents[0].ConvertTo<Product>();
-            result.productImg = _file.GetSingleData(result.productName).productImg;
-            return result;
-        }
-
-        public StateContainer InsertData(Product obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        public StateContainer UpdateDAta(Product obj)
+        public StateContainer UpdateDAta(Order obj)
         {
             throw new NotImplementedException();
         }

@@ -37,6 +37,7 @@ namespace WebAPI_FireBase_AzureCloud
         {
             services.AddSingleton<ICloudClient<FirestoreDb, Product>, ProductRepository_FireBase>();
             services.AddSingleton<ICloudClient<CloudBlobContainer, Product>, FileRepository_Azure>();
+            services.AddSingleton<ICloudClient<FirestoreDb, Order>, OrderRepository_FireBase>();
             services.AddControllers();
             services.AddMemoryCache();
             services.AddCors(options =>
@@ -48,6 +49,7 @@ namespace WebAPI_FireBase_AzureCloud
                     });
 
             });
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
            .AddJwtBearer(options =>
            {
@@ -109,6 +111,8 @@ namespace WebAPI_FireBase_AzureCloud
                     Array.Empty<string>()
                 }
                 });
+                var xmlFile = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+                c.IncludeXmlComments(xmlFile);
             });
            
             

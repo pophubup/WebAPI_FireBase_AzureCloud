@@ -10,19 +10,26 @@ namespace WebAPI_FireBase_AzureCloud.Models
     public class Product
     {
         [FirestoreProperty]
-        public int  CategoryID { get; set; }
+        public int categoryId { get; set; }
         [FirestoreProperty]
-        public string ProductDescription { get; set; }
+        public int productPrice { get; set; }
         [FirestoreProperty]
-        public string ProductID { get; set; }
+        public int Stock { get; set; }
         [FirestoreProperty]
-        public string ProductImagePath { get; set; }
+        public string productDes { get; set; }
         [FirestoreProperty]
-        public string ProductName { get; set; }
+        public string productId { get; set; }
         [FirestoreProperty]
-        public double ProductPrice { get; set; }
+        public string productImg { get; set; }
         [FirestoreProperty]
-        public double Quantity { get; set; }
+        public string productName { get; set; }
+       
+        [FirestoreProperty]
+        public DateTime createDate { get; set; }
+        [FirestoreProperty]
+        public string createID { get; set; }
+        [FirestoreProperty]
+        public string productVido { get; set; }
 
     }
 }

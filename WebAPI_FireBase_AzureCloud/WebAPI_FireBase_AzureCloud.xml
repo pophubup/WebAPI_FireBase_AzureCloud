@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WebAPI_FireBase_AzureCloud</name>
+    </assembly>
+    <members>
+        <member name="T:WebAPI_FireBase_AzureCloud.Controllers.LoginController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.LoginController.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="config"></param>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.LoginController.Login(WebAPI_FireBase_AzureCloud.Models.User)">
+            <summary>
+            login with availiable user
+            </summary>
+            <param name="login"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.LoginController.RefreshToken(System.String)">
+            <summary>
+            after one day token will expired and need refresh again
+            </summary>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WebAPI_FireBase_AzureCloud.Controllers.OrdersController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.OrdersController.#ctor(WebAPI_FireBase_AzureCloud.Repositories.IRepository.ICloudClient{Google.Cloud.Firestore.FirestoreDb,WebAPI_FireBase_AzureCloud.Models.Product},WebAPI_FireBase_AzureCloud.Repositories.IRepository.ICloudClient{Microsoft.WindowsAzure.Storage.Blob.CloudBlobContainer,WebAPI_FireBase_AzureCloud.Models.Product},WebAPI_FireBase_AzureCloud.Repositories.IRepository.ICloudClient{Google.Cloud.Firestore.FirestoreDb,WebAPI_FireBase_AzureCloud.Models.Order})">
+            <summary>
+            set Repositories 
+            </summary>
+            <param name="products"></param>
+            <param name="file"></param>
+            <param name="order"></param>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.OrdersController.GetOrders">
+            <summary>
+            Get all orders
+            </summary>
+            <param></param>
+            <returns>OrderDetail</returns>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.OrdersController.GetOrder(System.String)">
+            <summary>
+            Get single order
+            </summary>
+            <param name="orderId"></param>
+            <returns>OrderDetail</returns>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.OrdersController.InsertOrder(System.Collections.Generic.IEnumerable{WebAPI_FireBase_AzureCloud.Models.Order})">
+            <summary>
+            Insert bulk orders then rturn what detail with product detail and List orders
+            </summary>
+            <param name="orders"></param>
+            <returns></returns>
+             [HttpPost]
+        </member>
+        <member name="T:WebAPI_FireBase_AzureCloud.Controllers.ProductsController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.ProductsController.#ctor(Microsoft.Extensions.Logging.ILogger{WebAPI_FireBase_AzureCloud.Controllers.ProductsController},WebAPI_FireBase_AzureCloud.Repositories.IRepository.ICloudClient{Google.Cloud.Firestore.FirestoreDb,WebAPI_FireBase_AzureCloud.Models.Product})">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WebAPI_FireBase_AzureCloud.Controllers.ProductsController.GetProducts">
+            <summary>
+            need Authorization to get All Products
+            </summary>
+            <param header="Bear ...."></param>  
+        </member>
+    </members>
+</doc>
